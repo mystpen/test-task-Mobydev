@@ -7,21 +7,20 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/mystpen/test-task-Mobydev/config"
 )
 
-type config struct {
-	port int
-}
 
 type application struct {
-	config config
+	config config.Config
 	logger *log.Logger
 }
 
 func main() {
-	var cfg config
+	var cfg config.Config
 
-	flag.IntVar(&cfg.port, "port", 4000, "API server port")
+	flag.IntVar(&cfg.Port, "port", 4000, "API server port")
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
@@ -31,7 +30,7 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.port),
+		Addr:         fmt.Sprintf(":%d", cfg.Port),
 		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
