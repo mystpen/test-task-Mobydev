@@ -3,30 +3,37 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/mystpen/test-task-Mobydev/config"
+	"github.com/mystpen/test-task-Mobydev/internal/logger"
 )
-
 
 type application struct {
 	config config.Config
-	logger *log.Logger
+	logger *logger.Logger
 }
 
 func main() {
+	logger := logger.NewLogger()
+
 	var cfg config.Config
 
 	flag.IntVar(&cfg.Port, "port", 4000, "API server port")
 
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	// Connect to DB
+	db, err := openDB(cfg)
+	if err != nil {
+		logger.ErrLog.Fatal(err)
+	}
+	defer db.Close()
+
+	logger.InfoLog.Printf("database connection pool established")
 
 	app := &application{
 		config: cfg,
-		logger: logger,
+		logger: &logger,
 	}
 
 	srv := &http.Server{
@@ -38,7 +45,7 @@ func main() {
 	}
 
 	// Start the HTTP server
-	logger.Printf("starting server on %s", srv.Addr)
-	err := srv.ListenAndServe()
-	logger.Fatal(err)
+	logger.InfoLog.Printf("starting server on %s", srv.Addr)
+	err = srv.ListenAndServe()
+	logger.ErrLog.Fatal(err)
 }
