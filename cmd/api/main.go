@@ -12,6 +12,9 @@ import (
 
 	"github.com/mystpen/test-task-Mobydev/config"
 	"github.com/mystpen/test-task-Mobydev/internal/logger"
+	"github.com/mystpen/test-task-Mobydev/internal/repository"
+	"github.com/mystpen/test-task-Mobydev/internal/rest/handler"
+	"github.com/mystpen/test-task-Mobydev/internal/service"
 )
 
 type application struct {
@@ -49,16 +52,20 @@ func main() {
 		logger.ErrLog.Fatal(err)
 	}
 
+	repo := repository.NewRepository(db)
+	service := service.NewService(repo)
+	handler := handler.NewHandler(service)
+
 	logger.InfoLog.Printf("database migrations applied")
 
-	app := &application{
-		config: cfg,
-		logger: &logger,
-	}
+	// app := &application{
+	// 	config: cfg,
+	// 	logger: &logger,
+	// }
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
-		Handler:      app.routes(),
+		Handler:      handler.Routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
