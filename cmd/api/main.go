@@ -40,7 +40,7 @@ func main() {
 	if err != nil {
 		logger.ErrLog.Fatal(err)
 	}
-	migrator, err := migrate.NewWithDatabaseInstance("./migrations", "postgres", migrationDriver)
+	migrator, err := migrate.NewWithDatabaseInstance("file://migrations", "postgres", migrationDriver)
 	if err != nil {
 		logger.ErrLog.Fatal(err)
 	}

@@ -11,8 +11,10 @@ import (
 const configFile = "config/config.yaml"
 
 type Config struct {
-	Port   int    `yaml:"port"`
-	DBName string `yaml:"db_name"`
+	Port       int    `yaml:"port"`
+	DBName     string `yaml:"db_name"`
+	DBUser     string `yaml:"db_user"`
+	DBPassword string `yaml:"db_password"`
 }
 
 func Load() (*Config, error) {
