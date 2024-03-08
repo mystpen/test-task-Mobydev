@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 type envelope map[string]any
 
-func writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+func WriteJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return err

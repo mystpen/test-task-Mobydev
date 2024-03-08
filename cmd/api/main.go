@@ -17,11 +17,6 @@ import (
 	"github.com/mystpen/test-task-Mobydev/internal/service"
 )
 
-type application struct {
-	config config.Config
-	logger *logger.Logger
-}
-
 func main() {
 	logger := logger.NewLogger()
 
@@ -54,14 +49,9 @@ func main() {
 
 	repo := repository.NewRepository(db)
 	service := service.NewService(repo)
-	handler := handler.NewHandler(service)
+	handler := handler.NewHandler(service, &logger)
 
 	logger.InfoLog.Printf("database migrations applied")
-
-	// app := &application{
-	// 	config: cfg,
-	// 	logger: &logger,
-	// }
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
