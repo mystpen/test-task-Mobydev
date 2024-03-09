@@ -16,6 +16,7 @@ func (h *Handler) Routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodGet, "/users/:id", nil)
 	// router.HandlerFunc(http.MethodPost, "/video/create", nil)
 	router.HandlerFunc(http.MethodPut, "/videos/update", nil) //only admin
+	router.HandlerFunc(http.MethodPost, "/videos/create", nil) //only admin
 
 	return router
 }
