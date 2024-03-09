@@ -10,6 +10,8 @@ import (
 
 type UserService interface {
 	CheckUserExists(*model.CreateUserData) (bool, error)
+	CheckLogin(model.LoginUserData) (int, error)
+	AddToken(int, string) error
 }
 
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
@@ -58,5 +60,26 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
+	var inputUserData model.LoginUserData
+	//Decode json data
+	err := json.NewDecoder(r.Body).Decode(&inputUserData)
+	if err != nil {
+		pkg.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
 
+	userid, err := h.UserService.CheckLogin(inputUserData)
+	if err == nil {
+		cookieToken := pkg.SetCookie(w)
+		h.UserService.AddToken(userid, cookieToken)
+
+		h.Logger.InfoLog.Print("token added")
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else {
+		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
 }

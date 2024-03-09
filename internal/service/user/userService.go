@@ -8,6 +8,8 @@ import (
 type UserRepo interface {
 	GetUserEmail(string) error
 	CreateUserDB(*model.CreateUserData) error
+	CheckLoginDB(model.LoginUserData) (int, error)
+	AddTokenDB(int, string) error
 }
 
 type UserService struct {
@@ -50,4 +52,12 @@ func (u *UserService) CreateUser(user *model.CreateUserData) error {
 	}
 
 	return nil
+}
+
+func (u *UserService) CheckLogin(user model.LoginUserData) (int, error){
+	return u.repo.CheckLoginDB(user)
+}
+
+func (u *UserService) AddToken(userid int, cookie string) error{
+	return u.repo.AddTokenDB(userid, cookie)
 }

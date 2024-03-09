@@ -5,6 +5,7 @@ import (
 
 	"github.com/mystpen/test-task-Mobydev/internal/model"
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserStorage struct {
@@ -26,7 +27,7 @@ func (u *UserStorage) GetUserEmail(userEmail string) error {
 	return nil
 }
 
-func (u *UserStorage) CreateUserDB(user *model.CreateUserData) error{
+func (u *UserStorage) CreateUserDB(user *model.CreateUserData) error {
 	_, err := u.db.Exec("INSERT INTO users (email, username, password) VALUES ($1, $2, $3)",
 		user.Email,
 		user.Username,
@@ -38,3 +39,41 @@ func (u *UserStorage) CreateUserDB(user *model.CreateUserData) error{
 	}
 	return nil
 }
+
+func (u *UserStorage) AddTokenDB(userid int, cookieToken string) error {
+	query := `UPDATE users
+	SET token = ?, expires = DATETIME('now', '+6 hours')
+	WHERE ? = id`
+	if _, err := u.db.Exec(query, cookieToken, userid); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserStorage) RemoveTokenDB(token string) error {
+	query := `UPDATE users
+	SET token = NULL, expires = NULL
+	WHERE token = ?`
+	_, err := u.db.Exec(query, token)
+	return err
+}
+
+func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
+	var hashedPassword string
+	var userID int
+	err := u.db.QueryRow("SELECT id, password FROM users WHERE username= $1", user.Email).Scan(
+		&userID,
+		& hashedPassword)
+	if err != nil {
+		return 0, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(user.Password))
+
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
+}
+
+// func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
+// }
