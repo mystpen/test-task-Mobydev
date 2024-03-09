@@ -7,11 +7,11 @@ import (
 )
 
 type Repository struct {
-	UserRepo user.UserStorage
+	UserRepo *user.UserStorage
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
-		UserRepo: *user.NewUserStorage(db),
+		UserRepo: user.NewUserStorage(db),
 	}
 }
