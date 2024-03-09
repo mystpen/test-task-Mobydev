@@ -21,3 +21,15 @@ func WriteJSON(w http.ResponseWriter, status int, data envelope, headers http.He
 	w.Write(js)
 	return nil
 }
+
+func CheckEmail(inputName string) bool{
+	return true
+}
+
+func CheckName(inputName string) bool{
+	return true
+}
+
+func CheckPassword(inputName string) bool{
+	return true
+}

@@ -1,7 +1,8 @@
 package user
 
-type UserRepo interface{
+import "github.com/mystpen/test-task-Mobydev/internal/model"
 
+type UserRepo interface {
 }
 
 type UserService struct {
@@ -10,4 +11,8 @@ type UserService struct {
 
 func NewUserService(repo UserRepo) *UserService {
 	return &UserService{repo}
+}
+
+func (u UserService) CheckUserExists(user *model.CreateUserData) (bool, error) {
+	return true, nil
 }
