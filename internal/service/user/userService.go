@@ -11,6 +11,8 @@ type UserRepo interface {
 	CheckLoginDB(model.LoginUserData) (int, error)
 	AddTokenDB(int, string) error
 	GetUserByToken(string) (*model.User, error)
+	GetUserInfoByID(int) (*model.UserInfo, error)
+	ChangeUserInfo(*model.UserInfo) (*model.UserInfo, error)
 }
 
 type UserService struct {
@@ -65,4 +67,17 @@ func (u *UserService) AddToken(userid int, cookie string) error {
 
 func (u *UserService) GetUserByToken(token string) (user *model.User, err error) {
 	return u.repo.GetUserByToken(token)
+}
+
+func (u *UserService) GetUserInfo(user *model.User) (*model.UserInfo, error) {
+	UserID := user.ID
+	return u.repo.GetUserInfoByID(UserID)
+}
+
+func (u *UserService) ChangeUserInfo(user *model.UserInfo) (*model.UserInfo, error){
+	return u.repo.ChangeUserInfo(user)
+}
+
+func (u *UserService) GetUserInfoByID(UserID int64) (*model.UserInfo, error){
+	return u.repo.GetUserInfoByID(int(UserID))
 }

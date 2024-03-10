@@ -86,3 +86,13 @@ func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
 	}
 	return user, nil
 }
+
+func (u *UserStorage) GetUserInfoByID(int) (*model.UserInfo, error){
+	userInfo := &model.UserInfo{}
+	return userInfo, nil
+}
+
+func (u *UserStorage)ChangeUserInfo(createdUserInfo *model.UserInfo) (*model.UserInfo, error){
+	newUserInfo := &model.UserInfo{}
+	return newUserInfo, nil
+}
