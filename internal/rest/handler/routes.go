@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h *Handler) Routes() *httprouter.Router {
+func (h *Handler) Routes() http.Handler {
 	router := httprouter.New()
 
 	router.HandlerFunc(http.MethodPost, "/signup", h.signup)
@@ -17,5 +17,5 @@ func (h *Handler) Routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodGet, "/videos/:id", h.getVideoInfo) 
 	router.HandlerFunc(http.MethodPut, "/videos/update/:id", h.requireAdmin(h.putVideoInfo)) //only admin
 
-	return router
+	return h.middleware(router)
 }

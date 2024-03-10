@@ -48,11 +48,15 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 
 		if !existBool {
 			h.Logger.InfoLog.Print("user created")
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			env := pkg.Envelope{
+				"status": "success",
+				"info": "user created",
+			}
+			pkg.WriteJSON(w, http.StatusCreated, env, nil)
 		} else {
 			message := "user already exists"
 			h.Logger.ErrLog.Print(message)
-			pkg.ErrorResponse(w, r, http.StatusConflict, err.Error())
+			pkg.ErrorResponse(w, r, http.StatusConflict, message)
 		}
 	} else {
 		message := "incorrect format for email or username or password"

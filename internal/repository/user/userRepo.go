@@ -76,10 +76,11 @@ func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
 
 func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
 	user := &model.User{}
-	err := u.db.QueryRow("SELECT id, username, email FROM users WHERE token= $1", token).Scan(
+	err := u.db.QueryRow("SELECT id, username, email, role FROM users WHERE token= $1", token).Scan(
 		&user.ID,
 		&user.Username,
-		&user.Email)
+		&user.Email,
+		&user.Role)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetUserByToken:")
 	}
