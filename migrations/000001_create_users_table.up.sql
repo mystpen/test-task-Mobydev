@@ -8,3 +8,6 @@ CREATE TABLE IF NOT EXISTS users (
     role TEXT,
     expires DATETIME
 );
+
+INSERT INTO users (username, email, password, role)
+VALUES ('administrator', 'administrator@example.com', 'administrator', 'administrator');

@@ -5,7 +5,6 @@ import (
 
 	"github.com/mystpen/test-task-Mobydev/internal/model"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserStorage struct {
@@ -67,11 +66,10 @@ func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(user.Password))
-
-	if err != nil {
-		return 0, err
+	if user.Password != hashedPassword {
+		return 0, errors.New("incorrect password")
 	}
+
 	return userID, nil
 }
 
@@ -87,12 +85,12 @@ func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
 	return user, nil
 }
 
-func (u *UserStorage) GetUserInfoByID(int) (*model.UserInfo, error){
+func (u *UserStorage) GetUserInfoByID(int) (*model.UserInfo, error) {
 	userInfo := &model.UserInfo{}
 	return userInfo, nil
 }
 
-func (u *UserStorage)ChangeUserInfo(createdUserInfo *model.UserInfo) (*model.UserInfo, error){
+func (u *UserStorage) ChangeUserInfo(createdUserInfo *model.UserInfo) (*model.UserInfo, error) {
 	newUserInfo := &model.UserInfo{}
 	return newUserInfo, nil
 }

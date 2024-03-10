@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/mystpen/test-task-Mobydev/internal/model"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepo interface {
@@ -42,14 +41,8 @@ func (u *UserService) CheckUserExists(user *model.CreateUserData) (bool, error) 
 }
 
 func (u *UserService) CreateUser(user *model.CreateUserData) error {
-	hashedPW, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
 
-	user.Password = string(hashedPW)
-
-	err = u.repo.CreateUserDB(user)
+	err := u.repo.CreateUserDB(user)
 	if err != nil {
 		return err
 	}
@@ -74,10 +67,10 @@ func (u *UserService) GetUserInfo(user *model.User) (*model.UserInfo, error) {
 	return u.repo.GetUserInfoByID(UserID)
 }
 
-func (u *UserService) ChangeUserInfo(user *model.UserInfo) (*model.UserInfo, error){
+func (u *UserService) ChangeUserInfo(user *model.UserInfo) (*model.UserInfo, error) {
 	return u.repo.ChangeUserInfo(user)
 }
 
-func (u *UserService) GetUserInfoByID(UserID int64) (*model.UserInfo, error){
+func (u *UserService) GetUserInfoByID(UserID int64) (*model.UserInfo, error) {
 	return u.repo.GetUserInfoByID(int(UserID))
 }
