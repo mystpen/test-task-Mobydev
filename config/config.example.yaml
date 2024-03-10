@@ -1,4 +1,5 @@
-port: 4000
+host: localhost
+port: 5432
 db_name: postgres
 db_user: postgres
-db_password: password
+db_password: postgres
