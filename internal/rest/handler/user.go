@@ -12,6 +12,7 @@ type UserService interface {
 	CheckUserExists(*model.CreateUserData) (bool, error)
 	CheckLogin(model.LoginUserData) (int, error)
 	AddToken(int, string) error
+	GetUserByToken(string) (*model.User,error)
 }
 
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {

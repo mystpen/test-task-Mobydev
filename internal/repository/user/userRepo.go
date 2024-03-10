@@ -63,7 +63,7 @@ func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
 	var userID int
 	err := u.db.QueryRow("SELECT id, password FROM users WHERE username= $1", user.Email).Scan(
 		&userID,
-		& hashedPassword)
+		&hashedPassword)
 	if err != nil {
 		return 0, err
 	}
@@ -75,5 +75,14 @@ func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
 	return userID, nil
 }
 
-// func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
-// }
+func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
+	user := &model.User{}
+	err := u.db.QueryRow("SELECT id, username, email FROM users WHERE token= $1", token).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetUserByToken:")
+	}
+	return user, nil
+}

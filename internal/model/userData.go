@@ -1,17 +1,18 @@
 package model
 
-type CreateUserData struct{
+type CreateUserData struct {
 	Username string
-	Email string
+	Email    string
 	Password string
 }
 
-type LoginUserData struct{
-	Email string `json:"email"`
+type LoginUserData struct {
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type User struct{
-	ID int
-	
+type User struct {
+	ID       int
+	Username string
+	Email    string
 }
