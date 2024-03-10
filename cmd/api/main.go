@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -20,12 +19,13 @@ import (
 func main() {
 	logger := logger.NewLogger()
 
-	var cfg config.Config
-
-	flag.IntVar(&cfg.Port, "port", 4000, "API server port")
+	cfg, err := config.Load()
+	if err != nil{
+		logger.ErrLog.Fatal(err)
+	}
 
 	// Connect to DB
-	db, err := openDB(cfg)
+	db, err := openDB(*cfg)
 	if err != nil {
 		logger.ErrLog.Fatal(err)
 	}
@@ -46,6 +46,8 @@ func main() {
 	if err != nil && err != migrate.ErrNoChange {
 		logger.ErrLog.Fatal(err)
 	}
+
+	// defer migrator.Down()
 
 	repo := repository.NewRepository(db)
 	service := service.NewService(repo)

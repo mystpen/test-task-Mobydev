@@ -104,6 +104,8 @@ func (h *Handler) getUserInfo(w http.ResponseWriter, r *http.Request){
 }
 
 func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request){
+	user := h.getUserFromContext(r)
+
 	var inputUserData struct {
 		Username string `json:"username"`
 		Phone    string `json:"phone"`
@@ -119,6 +121,7 @@ func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request){
 	createdUserInfo := &model.UserInfo{
 		Username: inputUserData.Username,
 		Phone: inputUserData.Phone,
+		ID: user.ID,
 	}
 	newUserInfo, err := h.UserService.ChangeUserInfo(createdUserInfo)
 	if err != nil{

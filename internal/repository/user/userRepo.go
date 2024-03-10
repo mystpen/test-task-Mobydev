@@ -27,10 +27,11 @@ func (u *UserStorage) GetUserEmail(userEmail string) error {
 }
 
 func (u *UserStorage) CreateUserDB(user *model.CreateUserData) error {
-	_, err := u.db.Exec("INSERT INTO users (email, username, password) VALUES ($1, $2, $3)",
+	_, err := u.db.Exec("INSERT INTO users (email, username, password, role) VALUES ($1, $2, $3, $4)",
 		user.Email,
 		user.Username,
-		user.Password)
+		user.Password,
+		"user")
 
 	// fmt.Println(user.Email, user.Username, user.PasswordHash) TODO:
 	if err != nil {
@@ -85,12 +86,39 @@ func (u *UserStorage) GetUserByToken(token string) (*model.User, error) {
 	return user, nil
 }
 
-func (u *UserStorage) GetUserInfoByID(int) (*model.UserInfo, error) {
+func (u *UserStorage) GetUserInfoByID(userID int) (*model.UserInfo, error) {
 	userInfo := &model.UserInfo{}
+	
+	query := `SELECT id, username, email, COALESCE(phone_number, '')
+	FROM users WHERE id= $1
+	`
+	err := u.db.QueryRow(query, userID).Scan(
+		&userInfo.ID,
+		&userInfo.Username,
+		&userInfo.Email,
+		&userInfo.Phone,
+		)
+	if err != nil {
+		return userInfo, errors.Wrap(err, "user DB selecting:")
+	}
 	return userInfo, nil
 }
 
 func (u *UserStorage) ChangeUserInfo(createdUserInfo *model.UserInfo) (*model.UserInfo, error) {
 	newUserInfo := &model.UserInfo{}
+	query := `UPDATE users
+	SET username=$1,
+		phone_number=$2
+	WHERE id = $3
+	`
+	_, err := u.db.Exec(query, 
+		createdUserInfo.Username,
+		createdUserInfo.Phone,
+		createdUserInfo.ID,
+		)
+	if err != nil {
+		return nil, errors.Wrap(err, "sql users:")
+	}
+
 	return newUserInfo, nil
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone_number TEXT,
     token TEXT,
     role TEXT,
-    expires DATETIME
+    expires TIMESTAMP WITH TIME ZONE
 );
 
 INSERT INTO users (username, email, password, role)
