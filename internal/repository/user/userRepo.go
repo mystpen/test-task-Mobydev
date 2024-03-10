@@ -61,7 +61,7 @@ func (u *UserStorage) RemoveTokenDB(token string) error {
 func (u *UserStorage) CheckLoginDB(user model.LoginUserData) (int, error) {
 	var hashedPassword string
 	var userID int
-	err := u.db.QueryRow("SELECT id, password FROM users WHERE username= $1", user.Email).Scan(
+	err := u.db.QueryRow("SELECT id, password FROM users WHERE email= $1", user.Email).Scan(
 		&userID,
 		&hashedPassword)
 	if err != nil {
