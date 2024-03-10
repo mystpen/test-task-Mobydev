@@ -18,9 +18,9 @@ type User struct {
 	Role     string
 }
 
-type UserInfo struct{
-	ID int
-	Username string
-	Email string
-	Phone string
+type UserInfo struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 }
