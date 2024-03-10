@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT,
     phone_number TEXT,
     token TEXT,
+    role TEXT,
     expires DATETIME
 );

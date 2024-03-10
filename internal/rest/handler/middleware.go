@@ -48,6 +48,21 @@ func (h *Handler) requireAuth(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
+func (h *Handler) requireAdmin (next http.HandlerFunc) http.HandlerFunc {
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        user := h.getUserFromContext(r)
+        // Check that a user is activated.
+        if user.Role != "administrator" {
+			message :=  "no permission"
+            h.Logger.ErrLog.Print(message)
+			pkg.ErrorResponse(w, r, http.StatusForbidden, message)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
+	return h.requireAuth(fn)
+}
+
 func (h *Handler) getUserFromContext(r *http.Request) *model.User {
 	user, ok := r.Context().Value(ctxKey).(*model.User)
 
