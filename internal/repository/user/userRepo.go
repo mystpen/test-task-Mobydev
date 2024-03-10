@@ -42,8 +42,8 @@ func (u *UserStorage) CreateUserDB(user *model.CreateUserData) error {
 
 func (u *UserStorage) AddTokenDB(userid int, cookieToken string) error {
 	query := `UPDATE users
-	SET token = ?, expires = DATETIME('now', '+6 hours')
-	WHERE ? = id`
+	SET token = $1, expires = CURRENT_TIMESTAMP + INTERVAL '6 hours'
+	WHERE $2 = id`
 	if _, err := u.db.Exec(query, cookieToken, userid); err != nil {
 		return err
 	}

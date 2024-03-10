@@ -38,7 +38,8 @@ func (h *Handler) middleware(next http.Handler) http.Handler {
 func (h *Handler) requireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := h.getUserFromContext(r)
-		if len(user.Username) == 0 {
+
+		if len(user.Email) == 0 {
 			message := "Unauthorized"
 			h.Logger.ErrLog.Print(message)
 			pkg.ErrorResponse(w, r, http.StatusUnauthorized, message)
@@ -48,18 +49,18 @@ func (h *Handler) requireAuth(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-func (h *Handler) requireAdmin (next http.HandlerFunc) http.HandlerFunc {
+func (h *Handler) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        user := h.getUserFromContext(r)
-        // Check that a user is activated.
-        if user.Role != "administrator" {
-			message :=  "no permission"
-            h.Logger.ErrLog.Print(message)
+		user := h.getUserFromContext(r)
+		// Check that a user is activated.
+		if user.Role != "administrator" {
+			message := "no permission"
+			h.Logger.ErrLog.Print(message)
 			pkg.ErrorResponse(w, r, http.StatusForbidden, message)
-            return
-        }
-        next.ServeHTTP(w, r)
-    })
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 	return h.requireAuth(fn)
 }
 

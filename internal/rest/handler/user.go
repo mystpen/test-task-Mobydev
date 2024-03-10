@@ -12,7 +12,7 @@ type UserService interface {
 	CheckUserExists(*model.CreateUserData) (bool, error)
 	CheckLogin(model.LoginUserData) (int, error)
 	AddToken(int, string) error
-	GetUserByToken(string) (*model.User,error)
+	GetUserByToken(string) (*model.User, error)
 	GetUserInfo(*model.User) (*model.UserInfo, error)
 	ChangeUserInfo(*model.UserInfo) (*model.UserInfo, error)
 	GetUserInfoByID(int64) (*model.UserInfo, error)
@@ -50,7 +50,7 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 			h.Logger.InfoLog.Print("user created")
 			env := pkg.Envelope{
 				"status": "success",
-				"info": "user created",
+				"info":   "user created",
 			}
 			pkg.WriteJSON(w, http.StatusCreated, env, nil)
 		} else {
@@ -80,11 +80,13 @@ func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
 	userid, err := h.UserService.CheckLogin(inputUserData)
 	if err == nil {
 		cookieToken := pkg.SetCookie(w)
-		h.UserService.AddToken(userid, cookieToken)
+		err = h.UserService.AddToken(userid, cookieToken)
+		if err != nil {
+			h.Logger.ErrLog.Print(err.Error())
+			return
+		}
 
 		h.Logger.InfoLog.Print("token added")
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 		h.Logger.ErrLog.Print(err.Error())
@@ -92,22 +94,22 @@ func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) getUserInfo(w http.ResponseWriter, r *http.Request){
+func (h *Handler) getUserInfo(w http.ResponseWriter, r *http.Request) {
 	user := h.getUserFromContext(r)
 	userInfo, err := h.UserService.GetUserInfo(user)
-	if err != nil{
+	if err != nil {
 		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 		h.Logger.ErrLog.Print(err.Error())
 		return
 	}
 	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info": userInfo}, nil)
-	if err != nil{
+	if err != nil {
 		h.Logger.ErrLog.Print(err)
 		w.WriteHeader(500)
 	}
 }
 
-func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request){
+func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request) {
 	user := h.getUserFromContext(r)
 
 	var inputUserData struct {
@@ -124,23 +126,23 @@ func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request){
 
 	createdUserInfo := &model.UserInfo{
 		Username: inputUserData.Username,
-		Phone: inputUserData.Phone,
-		ID: user.ID,
+		Phone:    inputUserData.Phone,
+		ID:       user.ID,
 	}
 	newUserInfo, err := h.UserService.ChangeUserInfo(createdUserInfo)
-	if err != nil{
+	if err != nil {
 		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 		h.Logger.ErrLog.Print(err.Error())
 		return
 	}
-	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info":newUserInfo}, nil)
-	if err != nil{
+	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info": newUserInfo}, nil)
+	if err != nil {
 		h.Logger.ErrLog.Print(err)
 		w.WriteHeader(500)
 	}
 }
 
-func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request){
+func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request) {
 	id, err := pkg.ReadIDParam(r)
 	if err != nil {
 		pkg.ErrorResponse(w, r, http.StatusNotFound, err.Error())
@@ -148,13 +150,13 @@ func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	userInfo, err := h.UserService.GetUserInfoByID(id)
-	if err != nil{
+	if err != nil {
 		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 		h.Logger.ErrLog.Print(err.Error())
 		return
 	}
-	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info":userInfo}, nil)
-	if err != nil{
+	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info": userInfo}, nil)
+	if err != nil {
 		h.Logger.ErrLog.Print(err)
 		w.WriteHeader(500)
 	}

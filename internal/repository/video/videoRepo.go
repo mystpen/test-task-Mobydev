@@ -42,28 +42,19 @@ func (v *VideoStorage) ChangeVideoInfo(createdVideoInfo *model.VideoInfo, ID int
 		created_year=$4,
 		description=$5
 	WHERE id = $6
+	RETURNING id
 	`
-	res, err := v.db.Exec(query, 
+	err := v.db.QueryRow(query, 
 			createdVideoInfo.Title,
 			createdVideoInfo.Type,
 			createdVideoInfo.Category,
 			createdVideoInfo.CreatedYear,
 			createdVideoInfo.Description,
 			ID,
-		)
+		).Scan(&createdVideoInfo.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "sql videos:")
 	}
 
-	insertedId, err := res.LastInsertId()
-	if err != nil {
-		return nil, errors.Wrap(err, "sql result:")
-	}
-
-	createdVideoInfo.ID = int(insertedId)
-
-	if err != nil {
-		return nil, errors.Wrap(err, "ChangeVideoInfo repo:")
-	}
 	return createdVideoInfo, nil
 }
