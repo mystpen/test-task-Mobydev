@@ -86,3 +86,7 @@
     }
     ```
 ---
+### Run project:
+```
+go run ./cmd/api
+```
