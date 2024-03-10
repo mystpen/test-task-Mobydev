@@ -17,3 +17,10 @@ type User struct {
 	Email    string
 	Role     string
 }
+
+type UserInfo struct{
+	ID int
+	Username string
+	Email string
+	Phone string
+}

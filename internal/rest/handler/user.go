@@ -13,6 +13,9 @@ type UserService interface {
 	CheckLogin(model.LoginUserData) (int, error)
 	AddToken(int, string) error
 	GetUserByToken(string) (*model.User,error)
+	GetUserInfo(*model.User) (*model.UserInfo, error)
+	ChangeUserInfo(*model.UserInfo) (*model.UserInfo, error)
+	GetUserInfoByID(int64) (*model.UserInfo, error)
 }
 
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
@@ -82,5 +85,70 @@ func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
 		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
 		h.Logger.ErrLog.Print(err.Error())
 		return
+	}
+}
+
+func (h *Handler) getUserInfo(w http.ResponseWriter, r *http.Request){
+	user := h.getUserFromContext(r)
+	userInfo, err := h.UserService.GetUserInfo(user)
+	if err != nil{
+		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
+	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info": userInfo}, nil)
+	if err != nil{
+		h.Logger.ErrLog.Print(err)
+		w.WriteHeader(500)
+	}
+}
+
+func (h *Handler) putUserInfo(w http.ResponseWriter, r *http.Request){
+	var inputUserData struct {
+		Username string `json:"username"`
+		Phone    string `json:"phone"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&inputUserData)
+	if err != nil {
+		pkg.ErrorResponse(w, r, http.StatusBadRequest, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
+
+	createdUserInfo := &model.UserInfo{
+		Username: inputUserData.Username,
+		Phone: inputUserData.Phone,
+	}
+	newUserInfo, err := h.UserService.ChangeUserInfo(createdUserInfo)
+	if err != nil{
+		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
+	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info":newUserInfo}, nil)
+	if err != nil{
+		h.Logger.ErrLog.Print(err)
+		w.WriteHeader(500)
+	}
+}
+
+func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request){
+	id, err := pkg.ReadIDParam(r)
+	if err != nil {
+		pkg.ErrorResponse(w, r, http.StatusNotFound, err.Error())
+		h.Logger.ErrLog.Print("Not Found")
+		return
+	}
+	userInfo, err := h.UserService.GetUserInfoByID(id)
+	if err != nil{
+		pkg.ErrorResponse(w, r, http.StatusInternalServerError, err.Error())
+		h.Logger.ErrLog.Print(err.Error())
+		return
+	}
+	err = pkg.WriteJSON(w, http.StatusOK, pkg.Envelope{"user_info":userInfo}, nil)
+	if err != nil{
+		h.Logger.ErrLog.Print(err)
+		w.WriteHeader(500)
 	}
 }
