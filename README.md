@@ -1,1 +1,9 @@
-# The task is not done yet :(
+# The task for MOBYDEV
+
+- Administrator login data:
+```
+{
+    "email": "administrator@example.com",
+    "password": "administrator"
+}
+```
