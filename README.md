@@ -87,6 +87,15 @@
     ```
 ---
 ### Run project:
+- Create a configuration file. *See the ```config.example.yaml``` for an example*:
+```
+touch config/config.yaml
+```
+- To run POSTGRES container use docker-compose:
+```
+docker-compose up -d
+``` 
+- Run:
 ```
 go run ./cmd/api
 ```
